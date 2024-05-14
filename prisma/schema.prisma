@@ -1,0 +1,153 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                Int                 @id @default(autoincrement())
+  email             String              @unique
+  firstName         String
+  lastName          String
+  userName          String              @default("")
+  password          String
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  userRecipes       UserRecipe[]
+  userRecipeView    UserRecipeView[]
+  userRecipeLike    UserRecipeLike[]
+  UserRecipeDislike UserRecipeDislike[]
+  UserRecipeComment UserRecipeComment[]
+}
+
+model RecipeCategory {
+  id                    Int                  @id @default(autoincrement())
+  name                  String
+  UserRecipesCategories UserRecipeCategory[]
+}
+
+model UserRecipe {
+  id                        Int                         @id @default(autoincrement())
+  title                     String
+  description               String
+  isPublic                  Boolean                     @default(false)
+  createdAt                 DateTime                    @default(now())
+  updatedAt                 DateTime                    @updatedAt
+  userId                    Int
+  user                      User                        @relation(fields: [userId], references: [id])
+  UserRecipeCategory        UserRecipeCategory[]
+  UserRecipePreparationStep UserRecipePreparationStep[]
+  UserRecipeIngredient      UserRecipeIngredient[]
+  UserRecipeView            UserRecipeView[]
+  UserRecipeLike            UserRecipeLike[]
+  UserRecipeDislike         UserRecipeDislike[]
+  UserRecipeComment         UserRecipeComment[]
+  UserRecipeShowCase        UserRecipeShowCase[]
+}
+
+model UserRecipePreparationStep {
+  id           Int        @id @default(autoincrement())
+  stepOrder    Int        @default(0)
+  userRecipeId Int
+  recipe       UserRecipe @relation(fields: [userRecipeId], references: [id])
+  content      String
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+enum Measure {
+  mg
+  ml
+  g
+  kg
+  lt
+  package
+  box
+  unit
+}
+
+model UserRecipeIngredient {
+  id           Int        @id @default(autoincrement())
+  name         String
+  userRecipeId Int
+  recipe       UserRecipe @relation(fields: [userRecipeId], references: [id])
+  quantity     Int
+  measure      Measure
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model UserRecipeCategory {
+  id               Int            @id @default(autoincrement())
+  recipeCategoryId Int
+  recipeCategory   RecipeCategory @relation(fields: [recipeCategoryId], references: [id])
+  userRecipeId     Int
+  userRecipe       UserRecipe     @relation(fields: [userRecipeId], references: [id])
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+}
+
+model UserRecipeView {
+  id           Int        @id @default(autoincrement())
+  userRecipeId Int
+  recipe       UserRecipe @relation(fields: [userRecipeId], references: [id])
+  quantity     BigInt
+  userId       Int
+  user         User       @relation(fields: [userId], references: [id])
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model UserRecipeLike {
+  id           Int        @id @default(autoincrement())
+  userRecipeId Int
+  recipe       UserRecipe @relation(fields: [userRecipeId], references: [id])
+  quantity     BigInt
+  userId       Int
+  user         User       @relation(fields: [userId], references: [id])
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model UserRecipeDislike {
+  id           Int        @id @default(autoincrement())
+  userRecipeId Int
+  recipe       UserRecipe @relation(fields: [userRecipeId], references: [id])
+  quantity     BigInt
+  userId       Int
+  user         User       @relation(fields: [userId], references: [id])
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model UserRecipeComment {
+  id           Int        @id @default(autoincrement())
+  userRecipeId Int
+  recipe       UserRecipe @relation(fields: [userRecipeId], references: [id])
+  quantity     BigInt
+  userId       Int
+  user         User       @relation(fields: [userId], references: [id])
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model UserRecipeShowCase {
+  id              Int        @id @default(autoincrement())
+  userRecipeId    Int
+  recipe          UserRecipe @relation(fields: [userRecipeId], references: [id])
+  likesCount      BigInt
+  visitCount      BigInt
+  viewCount       BigInt
+  commentaryCount BigInt
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+}
