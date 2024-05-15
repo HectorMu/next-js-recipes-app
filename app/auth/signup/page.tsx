@@ -11,6 +11,9 @@ import { toast } from 'sonner'
 
 export default function SignupPage() {
   const { execute, isLoading } = useServerAction(signupAction, {
+    onError: (error) => {
+      toast.error(error)
+    },
     onComplete: () => {
       toast.success('Registered')
     }

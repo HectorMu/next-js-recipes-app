@@ -44,9 +44,8 @@ export const authOptions: NextAuthOptions = {
 
         const { id, password, createdAt, updatedAt, ...restOfUser } = user
 
-        console.log(restOfUser)
         return {
-          id: id.toString(),
+          id: String(id),
           ...restOfUser
         }
       }
@@ -71,6 +70,10 @@ export const authOptions: NextAuthOptions = {
       return token
     },
     async session({ session, token }) {
+      session.user.id = token.id
+      session.user.firstName = token.firstName
+      session.user.lastName = token.lastName
+      session.user.userName = token.userName
       return session
     }
   }
