@@ -1,29 +1,34 @@
+'use client'
 import { Skeleton } from '@/components/ui/skeleton'
-import { db } from '@/lib/db'
-import { delay } from '@/lib/delay'
-import { auth } from '@/lib/nextauth'
 
-export async function RecipesList() {
-  const session = await auth()
+import useCurrentUserRecipes from '../_hooks/useCurrentUserRecipes'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { useEditRecipeSheet } from '../_hooks/useOpenRecipe'
 
-  if (!session) return null
+export function RecipesList() {
+  const { data: recipes, isPending } = useCurrentUserRecipes()
+  const setOpen = useEditRecipeSheet((selector) => selector.setOpen)
 
-  const recipes = await db.userRecipe.findMany({
-    where: {
-      userId: {
-        equals: Number(session.user.id)
-      }
-    }
-  })
+  if (isPending) return <RecipesListSkeleton />
 
-  await delay(2000)
   return (
-    <div>
-      {recipes.map((item) => {
-        return <p key={item.id}>{item.id}</p>
+    <div className="grid grid-cols-2 gap-5">
+      {recipes?.map((item) => {
+        return (
+          <Card onClick={() => setOpen(item.id)} key={item.id}>
+            <CardHeader className="p-3">
+              <CardTitle>{item.title}</CardTitle>
+            </CardHeader>
+            <CardContent className="p-3">{item.description}</CardContent>
+          </Card>
+        )
       })}
     </div>
   )
 }
 
-export const RecipesListSkeleton = () => <Skeleton className="h-10 w-full" />
+export const RecipesListSkeleton = () => (
+  <Skeleton className="h-10 w-full mt-5" />
+)
+
+export const RecipesListError = () => <h1>Error</h1>

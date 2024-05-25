@@ -28,7 +28,6 @@ import { signOut, useSession } from 'next-auth/react'
 export default function Navbar({ children }: { children: React.ReactNode }) {
   const [active, setActive] = useState(true)
   const { data } = useSession()
-  console.log(data)
   return (
     <>
       <header className="flex fixed w-full bg-white h-14 items-center justify-between px-4 md:px-6 border-b bg-gray-100/40 dark:bg-gray-800/40">
